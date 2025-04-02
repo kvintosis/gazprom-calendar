@@ -85,9 +85,4 @@ export default {
     background-color: white;
     font-weight: bold;
 }
-
-.tab-content {
-    border: 1px solid #ccc;
-    padding: 10px;
-}
 </style>

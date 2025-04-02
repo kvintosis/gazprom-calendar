@@ -1,6 +1,5 @@
 <template>
     <div>
-      <h2>Мероприятия</h2>
       <div v-if="events.length > 0" class="container">
         <div class="row event-header">
           <div class="col-3 name">Название</div>
