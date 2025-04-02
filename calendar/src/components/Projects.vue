@@ -1,24 +1,17 @@
 <template>
     <div>
-    <h2>Проекты</h2>
-    <div v-if="projects.length > 0" class="container">
-        <div class="row project-header">
-        <div class="col-3 name">Название</div>
-        <div class="col-6 description">Описание</div>
-        <div class="col-3 actions"></div>
-
+        <h2>Проекты</h2>
+        <div v-if="projects.length > 0" class="container">
+            <div class="row project-header">
+                <div class="col-3 name">Название</div>
+                <div class="col-6 description">Описание</div>
+            </div>
+            <div v-for="project in projects" :key="project.id" class="row project-item">
+                <div class="col-3 project-name">{{ project.name }}</div>
+                <div class="col-6 project-description">{{ project.description }}</div>
+            </div>
         </div>
-        <div v-for="project in projects" :key="project.id" class="row project-item">
-        <div class="col-3 project-name">{{ project.name }}</div>
-        <div class="col-6 project-description">{{ project.description }}</div>
-        <div class="col-3 project-actions">
-            <button @click="showDetails(project.id)" class="btn">
-            Подробнее
-            </button>
-        </div>
-        </div>
-    </div>
-    <p v-else>Нет доступных проектов.</p>
+        <p v-else>Нет доступных проектов.</p>
     </div>
 </template>
 
@@ -40,9 +33,6 @@ export default {
                     { id: 2, name: 'Тут название', description: 'Тут описание' },
                 ];
             }, 200);
-        },
-        showDetails(projectId) {
-            // Что-то да будет
         },
     },
 };
