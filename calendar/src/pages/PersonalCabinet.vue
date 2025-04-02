@@ -1,5 +1,5 @@
 <template>
-    <div class="personal-cabinet__container">
+    <div class="container">
         <div class="content">
             <nav class="navigation">
                 <ul>
@@ -25,9 +25,9 @@
             </nav>
 
             <div class="tab-content">
-                <MyData v-if="activateTab='my-data'"/>
-                <Projects v-if="activateTab='projects'"/>
-                <Events v-if="activateTab='events'"/>
+                <MyData v-if="activeTab === 'my-data'"/>
+                <Projects v-if="activeTab === 'projects'"/>
+                <Events v-if="activeTab === 'events'"/>
             </div>
         </div>
     </div>
@@ -58,5 +58,31 @@ export default {
 </script>
 
 <style scoped>
+.content {
+    padding: 20px;
+}
 
+.navigation {
+    margin-top: 57px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.navigation li {
+    background-color: #eee;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.navigation li.active {
+    background-color: white;
+    font-weight: bold;
+}
 </style>
