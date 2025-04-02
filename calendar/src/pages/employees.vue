@@ -59,6 +59,14 @@
                 </li>
             </ul>
         </div>
+        <div class="search-container">
+            <input type="text" v-model="searchQuery" placeholder="Поиск сотрудников" class="search-input">
+            <ul class="employee-list">
+                <li v-for="employee in filteredEmployees" :key="employee.id">
+                    {{ employee.name }} - {{ employee.position }} - {{ employee.department }}
+                </li>
+            </ul>
+        </div>
   </div>  
 </template>
 
@@ -88,5 +96,18 @@ ul {
     width: 1px;
     background-color: black;
     z-index: 1000;
+}
+
+.search-container {
+    margin-left: 450px; 
+    margin-top: -300px; 
+}
+
+.search-input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px; 
+    margin-bottom: 20px; 
 }
 </style>
