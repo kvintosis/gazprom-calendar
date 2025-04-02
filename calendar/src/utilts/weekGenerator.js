@@ -1,18 +1,21 @@
-import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
+import { startOfWeek, addWeeks, format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
+// Генератор недель в русском формате
 function generateWeeks(startDate = new Date(), numberOfWeeks = 52) {
   const weeks = [];
-  let currentDate = startDate;
+  let currentDate = new Date(startDate);
 
   for (let i = 0; i < numberOfWeeks; i++) {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Неделя начинается с понедельника
-    const weekEnd = endOfWeek(weekStart);
+    const weekNumber = i + 1;
 
     weeks.push({
       id: i + 1,
-      label: `${i + 1} неделя с ${format(weekStart, 'dd.MM.yyyy')} по ${format(weekEnd, 'dd.MM.yyyy')}`,
+      label: `${weekNumber} неделя\nс ${format(weekStart, 'd MMMM yyyy', { locale: ru })}`,
       startDate: weekStart,
-      endDate: weekEnd,
+      endDate: addWeeks(weekStart, 1),
+      weekNumber: weekNumber
     });
 
     currentDate = addWeeks(currentDate, 1);
