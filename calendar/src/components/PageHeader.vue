@@ -56,7 +56,7 @@
           }, 
           {
             title: "Личный кабинет",
-            path: "/personalaccount",
+            path: "/PersonalCabinet",
             icon: lkIcon,
           }
         ]
