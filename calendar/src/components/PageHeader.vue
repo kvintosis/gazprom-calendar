@@ -51,7 +51,7 @@
           },
           {
             title: "Список сотрудников",
-            path: "/employeeslist",
+            path: "/employees",
             icon: catalogIcon,
           }, 
           {
