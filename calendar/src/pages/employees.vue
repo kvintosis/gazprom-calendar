@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="cont">
         <div class="vertical-line"></div>
         <h2 class="filters-header">Фильтры</h2>
         <div class="filters">
@@ -77,6 +77,7 @@ export default {
 </script>
 
 <style scoped>
+
 .filters {
     margin-left: 50px;
 }
