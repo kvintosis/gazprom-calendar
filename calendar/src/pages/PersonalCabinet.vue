@@ -87,7 +87,8 @@ export default {
 }
 
 .tab-content {
-    border: 1px solid #ccc;
+    border-top: 1px solid #ccc;
     padding: 10px;
 }
+
 </style>

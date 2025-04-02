@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    
     <PageHeader />
     <RouterView v-slot="{ Component }">
       <transition name="fade" mode="out-in">
