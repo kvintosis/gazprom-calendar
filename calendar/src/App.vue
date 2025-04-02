@@ -6,17 +6,26 @@
         <component :is="Component" />
       </transition>
     </RouterView>
+
+    <!-- <LoginPopup v-if="!isAuthencated"/> -->
   </div>
 </template>
 
 <script>
 import PageHeader from "@/components/PageHeader.vue";
+import LoginPopup from "@/components/LoginPopUp.vue";
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     PageHeader,
+    LoginPopup
   },
+
+  computed: {
+ ...mapGetters(['isAuthenticated']) 
+  }
 }
 </script>
 
