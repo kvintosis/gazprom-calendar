@@ -55,8 +55,9 @@
 <script>
 import eyeOpenPng from "@/assets/eye-open.png"; 
 import eyeClosedPng from "@/assets/eye-closed.png";
-//import axios from 'axios';
+import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+
 export default {
     data(){
         return{
@@ -78,10 +79,6 @@ export default {
         };
     },
     computed: {
-    //     isAuthentiaced() {
-    //         return this.$store.getters.isAuthentiaced;
-    //     }
-        
         passwordFieldType() {
             return this.passwordVisible ? "text" : "password";
         },
@@ -96,7 +93,7 @@ export default {
     },
     methods: {
         togglePasswordVisibility() {
-        this.passwordVisible = !this.passwordVisible;
+            this.passwordVisible = !this.passwordVisible;
         },
 
         validateEmail(){
@@ -104,7 +101,7 @@ export default {
             return re.test(this.email);
         },
         
-        handleLogin() {
+        async handleLogin() {
             this.showEmailError = false;
             this.showPasswordError = false;
             this.loginError = "";
@@ -113,67 +110,57 @@ export default {
                 this.showEmailError = true;
                 return;
             }
-            if (!this.password){
+            if (!this.password) {
                 this.showPasswordError = true;
                 return;
             }
 
             this.loading = true;
 
-            // try {
-            // const response = await axios.post('/api/auth/login', {
-            // email: this.email,
-            // password: this.password
-            // });
-            setTimeout(() => {
-                if(this.email === "test@example.com" && this.password === "123"){
-                    this.isAuthenticated = true;
-                    this.authStore.setAuth(true)
-                    console.log (this.authStore.isAdmin)
-                    this.isAuthenticated = true;
-                    this.authStore.closeLoginPopUp();
-                    this.$router.push("/");
-                } else if (this.email === "admin@example.com" && this.password === "123") {
-                    this.isAuthenticated = true;
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', this.email);
+                formData.append('password', this.password);
+
+                const response = await axios.post('http://127.0.0.1/login', formData, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+
+                // Check if admin by making a request to admin endpoint
+                try {
+                    const adminCheck = await axios.get('adminboard/', {
+                        withCredentials: true
+                    });
                     this.authStore.setAuth(true, true);
-                    console.log(this.authStore.isAdmin)
-                    this.authStore.closeLoginPopUp();
-                    this.$router.push("/");
-                } else {
-                    this.loginError = "Неверный email или пароль";
+                } catch (error) {
+                    // Not an admin
+                    this.authStore.setAuth(true, false);
                 }
+
+                this.authStore.closeLoginPopUp();
+                this.$router.push("/");
                 
+            } catch (error) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 401:
+                            this.loginError = "Неверный email или пароль";
+                            break;
+                        case 404:
+                            this.loginError = "Пользователь не найден";
+                            break;
+                        default:
+                            this.loginError = "Ошибка сервера. Попробуйте позже.";
+                    }
+                } else {
+                    this.loginError = "Ошибка соединения с сервером";
+                }
+            } finally {
                 this.loading = false;
-            }, 1000);
-            // if (response.data.success) {
-            // this.$store.commit('SET_USER', response.data.user);
-            // this.$store.commit('SET_TOKEN', response.data.token);
-            
-            // this.$emit('close');
-            
-            // this.$router.push('/');
-            // } else {
-            // this.loginError = response.data.message || "Ошибка входа";
-            // }
+            }
         }
-    //     } catch (error) {
-    //     if (error.response) {
-    //       switch (error.response.status) {
-    //         case 401:
-    //           this.loginError = "Неверный email или пароль";
-    //           break;
-    //         case 404:
-    //           this.loginError = "Пользователь не найден";
-    //           break;
-    //         default:
-    //           this.loginError = "Ошибка сервера. Попробуйте позже";
-    //       }
-    //     } else {
-    //       this.loginError = "Ошибка сети. Проверьте соединение";
-    //     }
-    //   } finally {
-    //     this.loading = false;
-    //   }
     }
 }
 </script>
