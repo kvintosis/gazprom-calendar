@@ -96,6 +96,7 @@
 <script>
 import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
+
 export default {
   props: {
     week: {
@@ -165,37 +166,45 @@ export default {
         month: "long" 
       });
     },
+
+
+    // Форматирование времени в 24-часовом формате
+    formatTime(time) {
+      return time; 
+    },
+
     saveEvent() {
       // Проверка на ввод данных
-      if (!this.newEvent.value.title || this.newEvent.value.date || this.newEvent.value.start_time || this.newEvent.value.end_time) {
+      if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time) {
         alert("Пожалуйста, заполните все обязательные поля.");
         return;
       }
 
       // Добавление нового события в массив events
       this.events.push({
-        title: this.newEvent.value.title,
-        date: new Date(this.newEvent.value.date), // Преобразуем строку даты в объект Date
-        start_time: this.newEvent.value.start_time,
-        end_time: this.newEvent.value.end_time,
-        description: this.newEvent.value.description,
-        rank: this.newEvent.value.rank,
+        title: this.newEvent.title,
+        date: new Date(this.newEvent.date), // Преобразуем строку даты в объект Date
+        start_time: this.newEvent.start_time,
+        end_time: this.newEvent.end_time,
+        description: this.newEvent.description,
+        rank: this.newEvent.rank,
       });
       
-      this.isOpen.value = false; // Закрытие формы после сохранения
+      this.isOpen = false;
 
-      this.newEvent.value = {
+      // Сброс формы
+      this.newEvent = {
         title: '',
         date: '',
-        time: '',
+        start_time: '',
+        end_time: '',
         description: '',
-      }; // Сброс формы
+        rank: '',
+      }; 
     }
   },
 };
 </script>
-
-
 
 <style scoped>
 .week-view {
