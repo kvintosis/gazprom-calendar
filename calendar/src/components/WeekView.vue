@@ -94,6 +94,7 @@
 </template>
 
 <script>
+import { watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
 
@@ -129,7 +130,13 @@ export default {
   },
   setup() {
     const authStore = useAuthStore();
+    const isAdmin = ref(authStore.isAdmin);
     const isOpen = ref(false);
+
+    watch(() => authStore.isAdmin, (newIsAdmin) => {
+      isAdmin.value = newIsAdmin;
+    });
+
     const newEvent = ref({
       title: '',
       date: '',
@@ -140,7 +147,7 @@ export default {
     });
     return {
       authStore,
-      isAdmin: authStore.isAdmin,
+      isAdmin,
       isOpen,
       newEvent,
     }
