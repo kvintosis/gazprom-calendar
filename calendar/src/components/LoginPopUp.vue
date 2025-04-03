@@ -74,7 +74,7 @@ export default {
         const authStore = useAuthStore()
         return { authStore }
     },
-    // computed: {
+    computed: {
     //     isAuthentiaced() {
     //         return this.$store.getters.isAuthentiaced;
     //     }
