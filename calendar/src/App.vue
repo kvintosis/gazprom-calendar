@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    
     <PageHeader />
     <RouterView v-slot="{ Component }">
       <transition name="fade" mode="out-in">
@@ -7,50 +8,41 @@
       </transition>
     </RouterView>
 
-    <LoginPopUp v-if="authStore.showLoginPopUp && !authStore.isAdmin"/>
+     <LoginPopup v-if="!isAuthenticated"/>
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import PageHeader from "@/components/PageHeader.vue"
-import LoginPopUp from "@/components/LoginPopUp.vue"
+<script>
+import PageHeader from "@/components/PageHeader.vue";
+import LoginPopup from "@/components/LoginPopUp.vue";
+import { useAuthStore } from '@/stores/authStore'; //
 
-const authStore = useAuthStore()
+export default {
+  name: 'App',
+  components: {
+    PageHeader,
+    LoginPopup
+  },
 
-// Для совместимости с Options API (если нужно)
-defineExpose({
-  authStore
-})
+  setup() {
+    const authStore = useAuthStore(); // Получаем доступ к authStore
+    return {
+      isAuthenticated: authStore.isAuthentificated 
+    };
+    }
+  }
 </script>
 
-<style lang="less">
-.app {
-  position: relative;
-  min-height: 100vh;
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.6s; 
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.6s;
-}
-
-.fade-enter,
-.fade-leave-to {
+.fade-enter {
   opacity: 0;
 }
 
-// Стили для админ-индикатора (если нужно)
-.admin-indicator {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  background: #42b983;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  z-index: 1000;
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
