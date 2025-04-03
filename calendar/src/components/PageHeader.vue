@@ -51,7 +51,7 @@
           },
           {
             title: "Список сотрудников",
-            path: "/employeeslist",
+            path: "/employees",
             icon: catalogIcon,
           }, 
           {
@@ -82,6 +82,7 @@
       height: 80px;
       margin: 0 auto;
       padding: 0 20px;
+
     }
   
     &__logo-wrap {
@@ -106,9 +107,10 @@
   .nav-item {
     position: relative;
     height: 40px;
-    
+
     /* Общая серебристая оболочка */
     &::before {
+      margin-left: 12px;
       content: '';
       position: absolute;
       top: 0;
@@ -126,6 +128,7 @@
   
     &:first-child {
       &::before {
+        left: -10px;
         width: 100%;
         background: linear-gradient(135deg, #d9d9d9 0%, #e8e8e8 50%, #d9d9d9 100%);
         transition: none;
@@ -149,6 +152,7 @@
         left: 0;
         right: 0;
         bottom: 0;
+        margin-left: 5px;
         z-index: -1; 
       }
       }

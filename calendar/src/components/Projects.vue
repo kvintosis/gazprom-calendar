@@ -1,5 +1,13 @@
 <template>
     <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page">Главная</li>
+                <li class="breadcrumb-item active" aria-current="page">Проекты</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
         <div v-if="projects.length > 0" class="container">
             <div class="row project-header">
                 <div class="col-3 name">Название</div>

@@ -1,6 +1,12 @@
 <template>
     <div>
-        <h2>Мои данные</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page">Главная</li>
+                <li class="breadcrumb-item active" aria-current="page">Мои данные</li>
+            </ol>
+        </nav>
+        <h2>МОИ ДАННЫЕ</h2>
         <div class="my-data-container">
             <div class="profile">
             <div class="profile-avatar">
@@ -23,6 +29,8 @@
             </div>
         </div>
     </div>
+
+    
 </template>
   
 <script>
@@ -47,6 +55,10 @@ export default {
     padding: 20px;
 }
 
+h2 {
+    font-family: "helioscondc";
+}
+
 .profile {
     width: 200px;
     margin-right: 20px;
@@ -67,12 +79,12 @@ export default {
 }
 
 .profile-info {
-flex: 1;
+    flex: 1;
 }
 
 .name {
+    font-family: "HeliosCondc";
     font-size: 1.2em;
-    font-weight: bold;
     margin-bottom: 5px;
 }
 
@@ -96,4 +108,6 @@ flex: 1;
     font-weight: bold;
     display: inline-block;
 }
+
+
 </style>
