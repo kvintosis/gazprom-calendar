@@ -14,37 +14,49 @@
                     v-model="email"
                     placeholder="Введите ваш email"
                     />
-                    <span v-if="showEmailError" class="error-message">Введите корректный email</span>
+                    <span v-if="showEmailError" class="error-message visible">Введите корректный email</span>
 
                 </div>
 
                 <div class="form-group">
                     <label class = "form-group__text" for="password">Пароль:</label>
-                    <input
-                    class = "form-group__input"
-                    type="password"
-                    id="password"
-                    v-model="password"
-                    placeholder="Введите ваш пароль"
-                    required
-                    />
+                    <div class="password-input-wrapper">
+                        <input
+                            class="form-group__input"
+                            :type="passwordFieldType"
+                            id="password"
+                            v-model="password"
+                            placeholder="Введите ваш пароль"
+                            required
+                        />
+                        <button
+                            type="button"
+                            class="password-toggle-button"
+                            @click="togglePasswordVisibility"
+                        >
+                            <img :src="eyeIcon" :alt="eyeAltText" width="24" height="24" />
+                        </button>
+                    </div>
+                    <span v-if="showPasswordError" class="error-message visible">Введите пароль</span>
+                </div>
 
-                <span v-if="showPasswordError" class="error-message">Неверный пароль</span>
-            </div>
-            <button type="submit" class="popUp__btn-login btn" :disabled="loading">
-          {{ loading ? 'Загрузка...' : 'Войти' }}
-        </button>
+                <button type="submit" class="popUp__btn-login btn" :disabled="loading">
+                    {{ loading ? 'Загрузка...' : 'Войти' }}
+                </button>
         
-        <div v-if="loginError" class="error-message server-error">
-          {{ loginError }}
-        </div>
+                <div v-if="loginError" class="error-message server-error visible">
+                    {{ loginError }}
+                </div>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+import eyeOpenPng from "@/assets/eye-open.png"; 
+import eyeClosedPng from "@/assets/eye-closed.png";
 //import axios from 'axios';
+
 export default {
     data(){
         return{
@@ -53,15 +65,32 @@ export default {
             showEmailError: false,
             showPasswordError: false,
             loginError: "",
-            loading: false
+            loading: false,
+            passwordVisible: false
         };
     },
-    // computed: {
+    computed: {
     //     isAuthentiaced() {
     //         return this.$store.getters.isAuthentiaced;
     //     }
-    //},
+        
+        passwordFieldType() {
+            return this.passwordVisible ? "text" : "password";
+        },
+
+        eyeIcon() {
+            return this.passwordVisible ? eyeOpenPng : eyeClosedPng;
+        },
+
+        eyeAltText() {
+            return this.passwordVisible ? "Скрыть пароль" : "Показать пароль";
+        },
+    },
     methods: {
+        togglePasswordVisibility() {
+        this.passwordVisible = !this.passwordVisible;
+        },
+
         validateEmail(){
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(this.email);
@@ -128,7 +157,7 @@ export default {
     //     this.loading = false;
     //   }
     }
-  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -246,6 +275,7 @@ export default {
         margin-top: 20px;
         text-align: center;
         border-left: 3px solid @error-red;
+        border-right: 3px solid @error-red;
     }
 }
 
@@ -306,5 +336,26 @@ export default {
         }
     }
 }
-    
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
 </style>
