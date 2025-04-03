@@ -80,10 +80,12 @@ export default {
 
 .filters {
     margin-left: 50px;
+    font-family: "helioscond";
 }
 .filters-header {
     margin-top: 100px;
     margin-left: 45px;
+    font-family: "helioscond";
 }
 ul {
     list-style: none;
@@ -100,6 +102,7 @@ ul {
 }
 
 .search-container {
+    font-family: "helioscond";
     margin-left: 450px; 
     margin-top: -300px; 
 }
