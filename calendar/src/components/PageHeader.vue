@@ -76,6 +76,7 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     
     &__container {
+      font-family: "helioscond";
       display: flex;
       align-items: center;
       max-width: 1200px;

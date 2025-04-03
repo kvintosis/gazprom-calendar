@@ -110,6 +110,7 @@ export default {
   line-height: 1.3;
   font-size: 0.95em;
   transition: all 0.2s;
+  font-family: "helioscond";
 }
 
 .week-item:hover {
@@ -120,6 +121,13 @@ export default {
   background-color: #4285f4;
   color: white;
   border-color: #4285f4;
+  font-family: "helioscond";
+}
+
+.active-week:hover {
+  color: rgb(255, 255, 255);
+  background-color: #71a5f9;
+  border-color: #71a5f9;
 }
 
 .nav-button {
@@ -130,6 +138,7 @@ export default {
   cursor: pointer;
   font-size: 1.2em;
   transition: background-color 0.2s;
+  font-family: "helioscond";
 }
 
 .nav-button:hover:not(:disabled) {

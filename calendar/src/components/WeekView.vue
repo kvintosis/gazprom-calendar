@@ -95,7 +95,7 @@ export default {
 
 <style scoped>
 .week-view {
-  font-family: Arial, sans-serif;
+  font-family: "helioscond";
   max-width: 100%;
 }
 

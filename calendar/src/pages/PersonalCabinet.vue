@@ -59,6 +59,7 @@ export default {
 
 <style scoped>
 .content {
+    font-family: "helioscond";
     padding: 20px;
 }
 
