@@ -55,7 +55,7 @@
 <script>
 import eyeOpenPng from "@/assets/eye-open.png"; 
 import eyeClosedPng from "@/assets/eye-closed.png";
-import axios from 'axios';
+import api from '@/services/api'
 import { useAuthStore } from '@/stores/authStore';
 
 export default {
@@ -125,45 +125,33 @@ export default {
                 const formData = new URLSearchParams();
                 formData.append('username', this.email);
                 formData.append('password', this.password);
-
-                const response = await axios.post('http://127.0.0.1:8000/login', formData, {
+                const loginResponse = await api.post('login', formData, {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     }
                 });
-
-                try {
-                    const adminCheck = await axios.get('adminboard/', {
-                        withCredentials: true
-                    });
-                    this.authStore.setAuth(true, true);
-                    window.location.reload();
-                } catch (error) {
-                    this.authStore.setAuth(true, false);
-                    window.location.reload();
-                }
-
-                this.authStore.closeLoginPopUp();
-                this.$router.push("/");
-                
-            } catch (error) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 401:
-                            this.loginError = "Неверный email или пароль";
-                            break;
-                        case 404:
-                            this.loginError = "Пользователь не найден";
-                            break;
-                        default:
-                            this.loginError = "Ошибка сервера. Попробуйте позже.";
+                if (loginResponse.status === 200) {
+                    try {
+                        const adminResponse = await api.get('adminboard');
+                        if (adminResponse.status === 200) {
+                            this.authStore.setAuth(true, true);
+                        }
+                    } catch (adminError) {
+                        this.authStore.setAuth(true, false);
                     }
-                } else {
-                    this.loginError = "Ошибка соединения с сервером";
                 }
-            } finally {
+            } catch (error) {
+                if (error.response && error.response.status === 400) {
+                    this.loginError = "Пользователь не найден";
+                }
+            }
+
+            finally {
                 this.loading = false;
             }
+            this.authStore.closeLoginPopUp();
+            this.$router.push("/");
+            window.location.reload();
         },
         setAuth(isAuth, isAdmin = false) {
             console.log("setAuth called with:", isAuth, isAdmin);

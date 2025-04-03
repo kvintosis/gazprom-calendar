@@ -1,48 +1,36 @@
-import axios from 'axios';
+import axios from "axios";
+import { useAuthStore } from "@/stores/authStore";
 
-const API_URL = 'http://localhost:8000';
-
-// Create axios instance with default config
-const apiClient = axios.create({
-    baseURL: API_URL,
-    withCredentials: true, // Required for cookies
-    headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin' 
-    }
+const api = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  withCredentials: true,
 });
 
-export const api = {
-    async login(email, password) {
-        const formData = new URLSearchParams();
-        formData.append('username', email);
-        formData.append('password', password);
-        
-        return await apiClient.post('/login', formData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            withCredentials: true
-        });
-    },
+api.interceptors.response.use(
+  (response) => response, 
+  (error) => {
+    const authStore = useAuthStore();
 
-    async checkAdmin() {
-        return await apiClient.get('/adminboard/');
-    },
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 401) {
+        authStore.setAuth(false, false);
+        window.location.reload();
+      }
 
-    async getEvents() {
-        return await apiClient.get('/events');
-    },
-
-    async getEmployees() {
-        return await apiClient.get('/employees');
-    },
-
-    async createEvent(eventData) {
-        return await apiClient.post('/adminboard/createevent', eventData);
-    },
-
-    async createUser(userData) {
-        return await apiClient.post('/adminboard/createuser', userData);
+      if (status === 307) {
+        const redirectUrl = error.response.headers?.location;
+        if (redirectUrl && redirectUrl === "/need-auth") {
+            authStore.setAuth(false, false);
+            window.location.reload();
+        }
+      }
+    } else {
+      console.error("Ошибка сети или сервера:", error.message);
     }
-};
+
+    return Promise.reject(error);
+  }
+);
+
+export default api;
