@@ -56,7 +56,7 @@
 import eyeOpenPng from "@/assets/eye-open.png"; 
 import eyeClosedPng from "@/assets/eye-closed.png";
 //import axios from 'axios';
-
+import { useAuthStore } from '@/stores/authStore'
 export default {
     data(){
         return{
@@ -69,7 +69,12 @@ export default {
             passwordVisible: false
         };
     },
-    computed: {
+
+    setup() {
+        const authStore = useAuthStore()
+        return { authStore }
+    },
+    // computed: {
     //     isAuthentiaced() {
     //         return this.$store.getters.isAuthentiaced;
     //     }
