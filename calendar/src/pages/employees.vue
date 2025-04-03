@@ -67,56 +67,94 @@
             <div class="search-container">
                 <input type="text" v-model="searchQuery" placeholder="Поиск сотрудников" class="search-input" @input="fetchEmployees">
                 <ul class="employee-list">
-                    <li v-for="employee in filteredEmployees" :key="employee.id">
-                        {{ employee.name }} - {{ employee.position }} - {{ employee.department }}
+                    <li v-for="employee in filteredEmployees" :key="employee.email" class="employee-item">
+                        <div class="employee-photo">
+                            <img :src="avatar" alt="Фото сотрудника">
+                        </div>
+                        <div class="employee-info">
+                            <strong>{{ employee.first_name }} {{ employee.last_name }}</strong><br>
+                            <span>Должность: {{ employee.position }}</span><br>
+                            <span>Отдел: {{ employee.department }}</span><br>
+                            <span>Email: {{ employee.email }}</span><br>
+                            <span>Навыки: {{ employee.skills }}</span><br>
+                            <span>Интересы: {{ employee.interests }}</span>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
-  </div>  
+    </div>  
+
+    <!-- Используем showLoginPopUp для управления видимостью -->
+    <div class="popUp_overlay" v-if="authStore.showLoginPopUp">
+        <div class="popUp__content">
+            <form @submit.prevent="handleLogin" novalidate>
+                <!-- Поля формы -->
+            </form>
+        </div>
+    </div>
 </template>
 
 <script>
+import avatar from "@/assets/avatar.png"; 
+import { computed } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import api from '@/services/api';
+
 export default {
     data() {
         return {
             searchQuery: '',
             selectedPositions: [],
             selectedDepartment: [],
-            employees: [
-                { id: 1, name: "Иван Иванов", position: "Инженер", department: "Отдел охраны" },
-                { id: 2, name: "Петр Петров", position: "Оператор", department: "Диспетчерская" },
-            ]
+            employees: [],
+            email: "",
+            password: "",
+            showEmailError: false,
+            showPasswordError: false,
+            loginError: "",
+            loading: false,
+            passwordVisible: false,
+        };
+    },
+    setup() {
+        const authStore = useAuthStore();
+
+        return { 
+            authStore, // Делаем authStore доступным в шаблоне
         };
     },
     computed: {
-    filteredEmployees() {
-      let filtered = this.employees;
+        filteredEmployees() {
+            let filtered = this.employees;
 
-      if (this.selectedPositions.length > 0) {
-        filtered = filtered.filter((employee) =>
-          this.selectedPositions.includes(employee.position)
-        );
-      }
+            if (this.selectedPositions.length > 0) {
+                filtered = filtered.filter((employee) =>
+                    this.selectedPositions.includes(employee.position)
+                );
+            }
 
-      if (this.selectedDepartment.length > 0) {
-        filtered = filtered.filter((employee) =>
-          this.selectedDepartment.includes(employee.department)
-        );
-      }
+            if (this.selectedDepartment.length > 0) {
+                filtered = filtered.filter((employee) =>
+                    this.selectedDepartment.includes(employee.department)
+                );
+            }
 
-      if (this.searchQuery) {
-        const searchTerm = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(
-          (employee) =>
-            employee.name.toLowerCase().includes(searchTerm) ||
-            employee.position.toLowerCase().includes(searchTerm) ||
-            employee.department.toLowerCase().includes(searchTerm)
-        );
-      }
+            if (this.searchQuery) {
+                const searchTerm = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(
+                    (employee) =>
+                        employee.first_name.toLowerCase().includes(searchTerm) ||
+                        employee.last_name.toLowerCase().includes(searchTerm) ||
+                        employee.position.toLowerCase().includes(searchTerm) ||
+                        employee.department.toLowerCase().includes(searchTerm) ||
+                        employee.skills.toLowerCase().includes(searchTerm) ||
+                        employee.interests.toLowerCase().includes(searchTerm)
+                );
+            }
 
-      return filtered;
-    },
+            return filtered;
+        },
     },
     methods: {
         fetchEmployees() {
@@ -125,23 +163,56 @@ export default {
                 department: this.selectedDepartment,
                 search: this.searchQuery
             };
-            fetch('http://localhost:5173/employees', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(filters)
-            })
-            .then(response => {
-                if(!response.ok) {
-                    throw new Error('Не удалось ответить на запрос');
+            api.get('employees')
+                .then(response => {
+                    this.employees = response.data;
+                })
+        },
+        async handleLogin() {
+            this.showEmailError = false;
+            this.showPasswordError = false;
+            this.loginError = "";
+
+            if (!this.validateEmail()) {
+                this.showEmailError = true;
+                return;
+            }
+            if (!this.password) {
+                this.showPasswordError = true;
+                return;
+            }
+
+            this.loading = true;
+
+            try {
+                const response = await api.login(this.email, this.password);
+                const { access_token } = response.data;
+
+                // Установка авторизации
+                this.authStore.setAuth(true);
+                document.cookie = `access_token=${access_token}; path=/;`;
+
+                // Закрытие popup
+                this.authStore.closeLoginPopUp();
+            } catch (error) {
+                if (error.response && error.response.status === 401) {
+                    this.loginError = "Неверный email или пароль";
+                } else {
+                    this.loginError = "Ошибка сервера. Попробуйте позже";
                 }
-                return response.json();
-            })
-            .then(data => {
-                this.employees = data; // Обновление списка сотрудников
-            })
-        }
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        validateEmail() {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(this.email);
+        },
+
+        togglePasswordVisibility() {
+            this.passwordVisible = !this.passwordVisible;
+        },
     },
     mounted() {
         this.fetchEmployees(); // Загрузка данных при монтировании
@@ -216,6 +287,22 @@ details[open] .opened-filter {
 .employee-list li {
     padding: 8px;
     border-bottom: 1px solid #eee;
+}
+
+.employee-item {
+    display: flex;
+    align-items: center;
+}
+
+.employee-photo img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.employee-info {
+    flex: 1;
 }
 
 /* Адаптивные стили */
