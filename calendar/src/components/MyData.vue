@@ -55,10 +55,6 @@ export default {
     padding: 20px;
 }
 
-h2 {
-    font-family: "helioscondc";
-}
-
 .profile {
     width: 200px;
     margin-right: 20px;
@@ -83,7 +79,6 @@ h2 {
 }
 
 .name {
-    font-family: "HeliosCondc";
     font-size: 1.2em;
     margin-bottom: 5px;
 }

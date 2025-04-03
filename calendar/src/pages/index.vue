@@ -76,6 +76,5 @@ export default {
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
-  font-family: 'Arial', sans-serif;
 }
 </style>

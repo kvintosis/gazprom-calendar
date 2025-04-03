@@ -59,12 +59,11 @@ export default {
 
 <style scoped>
 .content {
-    font-family: "helioscond";
     padding: 20px;
 }
 
 .navigation {
-    margin-top: 57px;
+    margin-top: 60px;
     display: flex;
     justify-content: flex-end;
 }
@@ -78,7 +77,10 @@ export default {
 
 .navigation li {
     background-color: #eee;
-    padding: 10px 20px;
+    width: 140px;
+    height: 40px;
+    align-content: center;
+    text-align: center;
     cursor: pointer;
 }
 

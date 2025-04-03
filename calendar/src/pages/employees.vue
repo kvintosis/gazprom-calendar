@@ -1,5 +1,5 @@
 <template>
-    <div class="cont">
+    <div class="container">
         <div class="vertical-line"></div>
         <h2 class="filters-header">Фильтры</h2>
         <div class="filters">
@@ -103,12 +103,10 @@ export default {
 <style scoped>
 .filters {
     margin-left: 50px;
-    font-family: "helioscond";
 }
 .filters-header {
     margin-top: 100px;
     margin-left: 45px;
-    font-family: "helioscond";
 }
 ul {
     list-style: none;
@@ -126,7 +124,6 @@ ul {
 
 .search-container {
     position: fixed;
-    font-family: "helioscond";
     top: 100px;
     left: 450px;
 }
