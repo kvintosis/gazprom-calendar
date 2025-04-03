@@ -47,13 +47,13 @@
             </div>
 
             <div class="form-group">
-                <label for="rank">Ранг/Приоритет:</label>
-                <select id="rank" v-model="rank">
-                    <option value="lowest">4 - пара человек</option>
-                    <option value="low">3 - должна быть команда</option>
-                    <option value="medium">2 - должен быть отдел</option>
-                    <option value="high">1 - должны быть все</option>
-                </select>
+              <label for="rank">Ранг/Приоритет:</label>
+              <select id="rank" v-model="newEvent.rank">
+                <option value="lowest">4 - пара человек</option>
+                <option value="low">3 - должна быть команда</option>
+                <option value="medium">2 - должен быть отдел</option>
+                <option value="high">1 - должны быть все</option>
+              </select>
             </div>
             
             <div class="form-group">
@@ -69,6 +69,15 @@
             <div class="form-group">
               <label>Время окончания мероприятия</label>
               <input v-model="newEvent.end_time" type="time" id="end_time">
+            </div>
+            
+            <div class="form-group">
+              <label>Организатор</label>
+              <select v-model="newEvent.organizer_id">
+                <option v-for="user in users" :key="user.id" :value="user.id">
+                  {{ user.name }}
+                </option>
+              </select>
             </div>
             
             <div class="form-group">
@@ -88,15 +97,12 @@
     <div class="calendar-note">
       Если вы планируете посетить мероприятие, отметьте его галочкой
     </div>
-
-    
   </div>
 </template>
 
 <script>
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import { ref } from 'vue';
 
 export default {
   props: {
@@ -108,6 +114,11 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  data() {
+    return {
+      users: [], // Список пользователей
+    };
   },
   computed: {
     // Получаем дни недели (пн-пт)
@@ -143,21 +154,30 @@ export default {
       start_time: '',
       end_time: '',
       description: '',
-      rank: 'lowest' // Устанавливаем значение по умолчанию для ранга
+      rank: 'lowest', // Устанавливаем значение по умолчанию для ранга
     });
+
     return {
       authStore,
       isAdmin,
       isOpen,
       newEvent,
-    }
+    };
+  },
+  mounted() {
+    this.fetchUsers(); // Загружаем список пользователей при монтировании
   },
   methods: {
     // События для конкретного дня
     getEventsForDay(date) {
-      return this.events.filter(event => 
-        event.date.toDateString() === date.toDateString()
-      ).sort((a, b) => a.time.localeCompare(b.time));
+      return this.events
+        .filter(event => event.date.toDateString() === date.toDateString())
+        .sort((a, b) => {
+          if (a.start_time && b.start_time) {
+            return a.start_time.localeCompare(b.start_time);
+          }
+          return 0; // Если свойства отсутствуют, не изменяем порядок
+        });
     },
     
     // Название дня недели на русском
@@ -173,42 +193,98 @@ export default {
         month: "long" 
       });
     },
-
-
-    // Форматирование времени в 24-часовом формате
-    formatTime(time) {
-      return time; 
+    async fetchEvents() {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/events", {
+                credentials: "include", // Для отправки куки
+            });
+            if (!response.ok) {
+                throw new Error("Ошибка при загрузке событий");
+            }
+            const data = await response.json();
+            this.events = data.map(event => ({
+                ...event,
+                date: new Date(event.start_time), // Преобразуем дату начала в объект Date
+                start_time: event.start_time.split("T")[1].slice(0, 5), // Часы:минуты
+                end_time: event.end_time.split("T")[1].slice(0, 5), // Часы:минуты
+            }));
+        } catch (error) {
+            console.error(error);
+        }
     },
-
-    saveEvent() {
-      // Проверка на ввод данных
-      if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time) {
-        alert("Пожалуйста, заполните все обязательные поля.");
-        return;
+    async fetchUsers() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/users", {
+          credentials: "include", // Для отправки куки
+        });
+        if (!response.ok) {
+          throw new Error("Ошибка при загрузке пользователей");
+        }
+        this.users = await response.json();
+      } catch (error) {
+        console.error("Ошибка при загрузке пользователей:", error);
       }
+    },
+    async saveEvent() {
+      try {
+        if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time || !this.newEvent.organizer_id) {
+          alert("Пожалуйста, заполните все обязательные поля.");
+          return;
+        }
 
-      // Добавление нового события в массив events
-      this.events.push({
-        title: this.newEvent.title,
-        date: new Date(this.newEvent.date), // Преобразуем строку даты в объект Date
-        start_time: this.newEvent.start_time,
-        end_time: this.newEvent.end_time,
-        description: this.newEvent.description,
-        rank: this.newEvent.rank,
-      });
-      
-      this.isOpen = false;
+        const response = await fetch("http://127.0.0.1:8000/adminboard/createevent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Для отправки куки
+          body: JSON.stringify({
+            title: this.newEvent.title,
+            description: this.newEvent.description,
+            start_time: `${this.newEvent.date}T${this.newEvent.start_time}`,
+            end_time: `${this.newEvent.date}T${this.newEvent.end_time}`,
+            type: "meeting", // Пример типа
+            organizer_id: this.newEvent.organizer_id, // Передаем organizer_id
+          }),
+        });
 
-      // Сброс формы
-      this.newEvent = {
-        title: '',
-        date: '',
-        start_time: '',
-        end_time: '',
-        description: '',
-        rank: '',
-      }; 
-    }
+        if (!response.ok) {
+          throw new Error("Ошибка при создании события");
+        }
+
+        await this.fetchEvents(); // Обновляем список событий
+        this.isOpen = false;
+
+        // Сброс формы
+        this.newEvent = {
+          title: '',
+          date: '',
+          start_time: '',
+          end_time: '',
+          description: '',
+          rank: 'lowest',
+          organizer_id: null,
+        };
+      } catch (error) {
+        console.error("Ошибка при создании события:", error);
+      }
+    },
+    async deleteEvent(event) {
+      try {
+          const response = await fetch(`http://127.0.0.1:8000/adminboard/deleteevent/${event.id}`, {
+              method: "DELETE",
+              credentials: "include", // Для отправки куки
+          });
+
+          if (!response.ok) {
+              throw new Error("Ошибка при удалении события");
+          }
+
+          await this.fetchEvents(); // Обновляем список событий
+      } catch (error) {
+          console.error(error);
+      }
+  }
   },
 };
 </script>

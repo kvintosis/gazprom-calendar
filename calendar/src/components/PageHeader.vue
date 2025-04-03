@@ -120,6 +120,10 @@
     position: relative;
     height: 40px;
 
+    &.logout-button {
+        background-color: white; /* Красный цвет для кнопки выхода */
+        border-radius: 20px; /* Скругление углов для кнопки выхода */
+    }
     /* Общая серебристая оболочка */
     &::before {
       margin-left: 12px;
@@ -236,6 +240,7 @@
           transition-delay: 0s;
         }
       }
+
     }
     
     &:not(.has-icon):not(:first-child) {
