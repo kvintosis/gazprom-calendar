@@ -14,14 +14,14 @@ api.interceptors.response.use(
     if (error.response) {
       const status = error.response.status;
       if (status === 401) {
-        authStore.setAuth(false, false);
+        authStore.showLoginPopUp();
         window.location.reload();
       }
 
       if (status === 307) {
         const redirectUrl = error.response.headers?.location;
         if (redirectUrl && redirectUrl === "/need-auth") {
-            authStore.setAuth(false, false);
+            authStore.showLoginPopUp();
             window.location.reload();
         }
       }
