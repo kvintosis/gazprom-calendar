@@ -175,7 +175,7 @@ export default {
 .popUp__logo {
     display: block;
     margin: 0 auto 24px;
-    width: 72px;
+    width: 150px;
     height: auto;
 }
 
