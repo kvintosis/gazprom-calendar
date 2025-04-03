@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-        <div class="vertical-line"></div>
         <h2 class="filters-header">Фильтры</h2>
         <div class="filters">
             <details>
@@ -82,7 +81,10 @@ export default {
             searchQuery: '',
             selectedPositions: [],
             selectedDepartment: [],
-            employees: []
+            employees: [
+                { id: 1, name: "Иван Иванов", position: "Инженер", department: "Отдел охраны" },
+                { id: 2, name: "Петр Петров", position: "Оператор", department: "Диспетчерская" },
+            ]
         };
     },
     methods: {
