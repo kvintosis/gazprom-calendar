@@ -1,5 +1,5 @@
 <template>
-    <div class="popUp_overlay" v-if="!isAuthentiaced">
+    <div class="popUp_overlay" v-if="!isAuthenticated">
         <div class="popUp__content">
             <img class ="popUp__logo" src="@/assets/loginicon.png">
             <h2 class = "popUp__text">Вход</h2>
@@ -56,7 +56,7 @@
 import eyeOpenPng from "@/assets/eye-open.png"; 
 import eyeClosedPng from "@/assets/eye-closed.png";
 //import axios from 'axios';
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/stores/authStore';
 export default {
     data(){
         return{
@@ -72,7 +72,10 @@ export default {
 
     setup() {
         const authStore = useAuthStore()
-        return { authStore }
+        return { 
+            authStore,
+            isAuthenticated: authStore.isAuthentificated, 
+        };
     },
     computed: {
     //     isAuthentiaced() {
@@ -124,12 +127,22 @@ export default {
             // });
             setTimeout(() => {
                 if(this.email === "test@example.com" && this.password === "123"){
-                    this.isAuthentiaced =true;
-                    this.$emit("close");
+                    this.isAuthenticated = true;
+                    this.authStore.setAuth(true)
+                    console.log (this.authStore.isAdmin)
+                    this.isAuthenticated = true;
+                    this.authStore.closeLoginPopUp();
                     this.$router.push("/");
-                } else{
+                } else if (this.email === "admin@example.com" && this.password === "123") {
+                    this.isAuthenticated = true;
+                    this.authStore.setAuth(true, true);
+                    console.log(this.authStore.isAdmin)
+                    this.authStore.closeLoginPopUp();
+                    this.$router.push("/");
+                } else {
                     this.loginError = "Неверный email или пароль";
                 }
+                
                 this.loading = false;
             }, 1000);
             // if (response.data.success) {

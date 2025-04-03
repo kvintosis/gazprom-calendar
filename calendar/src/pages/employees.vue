@@ -16,7 +16,7 @@
                     </li>
                     <li>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Оператор" id="operator">
+                            <input class="form-check-input" type="checkbox" value="Оператор" id="operator" v-model="selectedPositions" @change="fetchEmployees">
                             <label class="form-check-label" for="operator">
                                 Оператор
                             </label>
@@ -92,10 +92,27 @@ export default {
                 department: this.selectedDepartment,
                 search: this.searchQuery
             };
-
-
+            fetch('http://localhost:5173/employees', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(filters)
+            })
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('Не удалось ответить на запрос');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.employees = data; // Обновление списка сотрудников
+            })
         }
-    }    
+    },
+    mounted() {
+        this.fetchEmployees(); // Загрузка данных при монтировании
+    }
 }
 </script>
 
@@ -150,6 +167,15 @@ details[open] .closed-filter {
 
 details[open] .opened-filter {
     display: block;
+}
+
+/* Адаптивные стили */
+@media (max-width: 1920px) {
+    .vertical-line {
+        left: 375px;
+        top: -21px;
+        bottom: 0;
+    }
 }
 
 
