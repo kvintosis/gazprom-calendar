@@ -16,6 +16,7 @@
             </div>
           </router-link>
         </div>
+        <button @click="resetAuth" class="nav-item logout-button">Выйти</button>
         <nav class="page-header__nav">
           <div 
             v-for="tab in tabs" 
@@ -37,29 +38,40 @@
   </template>
   
   <script>
+  import { useAuthStore } from '@/stores/authStore';
   import catalogIcon from '@/assets/svg/catalog.svg';
   import lkIcon from '@/assets/svg/LK.svg';
   
   export default {
-    data() {
+    setup() {
+      const authStore = useAuthStore();
+
+      const resetAuth = () => {
+          authStore.setAuth(false, false);
+          console.log("Авторизация сброшена: isAuth = false, isAdmin = false");
+      };
+
+      const tabs = [
+        {
+          title: "Главная",
+          path: "/",
+          icon: null,
+        },
+        {
+          title: "Список сотрудников",
+          path: "/employees",
+          icon: catalogIcon,
+        }, 
+        {
+          title: "Личный кабинет",
+          path: "/PersonalCabinet",
+          icon: lkIcon,
+        }
+      ];
+
       return {
-        tabs: [
-          {
-            title: "Главная",
-            path: "/",
-            icon: null,
-          },
-          {
-            title: "Список сотрудников",
-            path: "/employees",
-            icon: catalogIcon,
-          }, 
-          {
-            title: "Личный кабинет",
-            path: "/PersonalCabinet",
-            icon: lkIcon,
-          }
-        ]
+          resetAuth,
+          tabs,
       };
     },
   };

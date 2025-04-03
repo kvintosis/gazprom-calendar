@@ -10,7 +10,7 @@
                     <input
                     class = "form-group__input"
                     type="email"
-                    id="email"
+                    id="email" 
                     v-model="email"
                     placeholder="Введите ваш email"
                     />
@@ -72,10 +72,14 @@ export default {
     },
 
     setup() {
-        const authStore = useAuthStore()
+        const authStore = useAuthStore();
+
+        // Загружаем состояние авторизации при монтировании
+        authStore.loadAuthState();
+
         return { 
             authStore,
-            isAuthenticated: authStore.isAuthentificated, 
+            isAuthenticated: authStore.isAuthenticated, // Исправлено
         };
     },
     computed: {
@@ -122,21 +126,21 @@ export default {
                 formData.append('username', this.email);
                 formData.append('password', this.password);
 
-                const response = await axios.post('http://127.0.0.1/login', formData, {
+                const response = await axios.post('http://127.0.0.1:8000/login', formData, {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     }
                 });
 
-                // Check if admin by making a request to admin endpoint
                 try {
                     const adminCheck = await axios.get('adminboard/', {
                         withCredentials: true
                     });
                     this.authStore.setAuth(true, true);
+                    window.location.reload();
                 } catch (error) {
-                    // Not an admin
                     this.authStore.setAuth(true, false);
+                    window.location.reload();
                 }
 
                 this.authStore.closeLoginPopUp();
@@ -160,7 +164,14 @@ export default {
             } finally {
                 this.loading = false;
             }
-        }
+        },
+        setAuth(isAuth, isAdmin = false) {
+            console.log("setAuth called with:", isAuth, isAdmin);
+            this.isAuth = isAuth;
+            this.isAdmin = isAdmin;
+            console.log("isAuth:", this.authStore.isAuth);
+        },
+        
     }
 }
 </script>
