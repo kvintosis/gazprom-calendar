@@ -3,64 +3,69 @@
         <div class="vertical-line"></div>
         <h2 class="filters-header">Фильтры</h2>
         <div class="filters">
-            <h3>— Должность</h3>
-            <ul>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Инженер
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Оператор
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Сварщик
-                        </label>
-                    </div>
-                </li>
-            </ul>
-            
-            <h3>— Отдел</h3>
-            <ul>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Отдел охраны
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Диспетчерская
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Отдел капитального строительства
-                        </label>
-                    </div>
-                </li>
-            </ul>
+            <details>
+                <summary>Должность</summary>
+                <ul>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Инженер" id="engineer" v-model="selectedPositions" @change="fetchEmployees">
+                            <label class="form-check-label" for="engineer">
+                                Инженер
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Оператор" id="operator">
+                            <label class="form-check-label" for="operator">
+                                Оператор
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Сварщик" id="welder" v-model="selectedPositions" @change="fetchEmployees">
+                            <label class="form-check-label" for="welder">
+                                Сварщик
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Отдел</summary>
+                <ul>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Отдел охраны" id="security" v-model="selectedDepartment" @change="fetchEmployees">
+                            <label class="form-check-label" for="security">
+                                Отдел охраны
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Диспетчерская" id="dispatcher" v-model="selectedDepartment" @change="fetchEmployees">
+                            <label class="form-check-label" for="dispatcher">
+                                Диспетчерская
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Отдел капитального строительства" id="construction" v-model="selectedDepartment" @change="fetchEmployees">
+                            <label class="form-check-label" for="construction">
+                                Отдел капитального строительства
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+            </details>
         </div>
+        
         <div class="search-container">
-            <input type="text" v-model="searchQuery" placeholder="Поиск сотрудников" class="search-input">
+            <input type="text" v-model="searchQuery" placeholder="Поиск сотрудников" class="search-input" @input="fetchEmployees">
             <ul class="employee-list">
                 <li v-for="employee in filteredEmployees" :key="employee.id">
                     {{ employee.name }} - {{ employee.position }} - {{ employee.department }}
@@ -72,12 +77,30 @@
 
 <script>
 export default {
-    
+    data() {
+        return {
+            searchQuery: '',
+            selectedPositions: [],
+            selectedDepartment: [],
+            employees: []
+        };
+    },
+    methods: {
+        fetchEmployees() {
+            const filters = {
+                positions: this.selectedPositions,
+                department: this.selectedDepartment,
+                search: this.searchQuery
+            };
+
+
+        }
+    }    
 }
 </script>
 
-<style scoped>
 
+<style scoped>
 .filters {
     margin-left: 50px;
     font-family: "helioscond";
@@ -102,9 +125,15 @@ ul {
 }
 
 .search-container {
+    position: fixed;
     font-family: "helioscond";
-    margin-left: 450px; 
-    margin-top: -300px; 
+    top: 100px;
+    left: 450px;
+}
+
+summary {
+    margin-top: 15px;
+    font-size: 22px;
 }
 
 .search-input {
@@ -114,4 +143,15 @@ ul {
     border-radius: 4px; 
     margin-bottom: 20px; 
 }
+
+details[open] .closed-filter {
+    display: none;
+}
+
+details[open] .opened-filter {
+    display: block;
+}
+
+
+
 </style>
