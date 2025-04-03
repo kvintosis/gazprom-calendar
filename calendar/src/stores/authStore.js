@@ -3,18 +3,23 @@ import { defineStore } from 'pinia'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuth: false,
-    isAdmin: true, 
-    showLoginPopUp: false
+    isAdmin: false, 
+    showLoginPopUp: true
   }),
   getters: {
-    isAuthentificated: (state) => state.isAuth || state.isAdmin
+    isAuthenticated: (state) => state.isAuth
   },
   actions: {
     openLoginPopUp() {
-      if (!this.isAdmin) this.showLoginPopUp = true
+      if (!this.isAuth) this.showLoginPopUp = true
     },
     closeLoginPopUp() {
       this.showLoginPopUp = false
-    }
+    },
+    setAuth(isAuth, isAdmin = false) {
+      this.isAuth = isAuth;
+      this.isAdmin = isAdmin;
+    },
   }
+  
 })
