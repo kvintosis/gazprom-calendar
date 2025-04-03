@@ -45,6 +45,7 @@
 
 <script>
 //import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore'
 export default {
     data(){
         return{
@@ -55,6 +56,11 @@ export default {
             loginError: "",
             loading: false
         };
+    },
+
+    setup() {
+        const authStore = useAuthStore()
+        return { authStore }
     },
     // computed: {
     //     isAuthentiaced() {
