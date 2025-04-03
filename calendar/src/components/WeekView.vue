@@ -13,11 +13,11 @@
       <div v-for="day in daysOfWeek" :key="day.date" class="day-column">
         <div 
           v-for="event in getEventsForDay(day.date)" 
-          :key="`${event.time}-${event.team}`" 
+          :key="`${event.start_time}-${event.end_time}-${event.title}`" 
           class="event"
         >
-          <div class="event-time">{{ event.time }}</div>
-          <div class="event-team">{{ event.team }}</div>
+          <div class="event-time">{{ event.start_time }} - {{ event.end_time }}</div>
+          <div class="event-team">{{ event.title }}</div>
           <div class="controls">
             <input 
               type="checkbox" 
