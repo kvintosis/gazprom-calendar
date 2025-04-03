@@ -30,13 +30,13 @@
       </div>
     </div>
 
+    <!-- Админ панель (форма) -->
     <div class="admin_panel" v-if="isAdmin">
       Админ-панель
       <div class="admin-event-creator">
         <button class="add-event-btn" @click="isOpen = true">
           <span>+</span>
         </button>
-    
         <div v-if="isOpen" class="modal">
           <div class="modal-content">
             <h3>Добавить событие</h3>
@@ -45,6 +45,16 @@
               <label>Название</label>
               <input v-model="newEvent.title" type="text">
             </div>
+
+            <div class="form-group">
+                <label for="rank">Ранг/Приоритет:</label>
+                <select id="rank" v-model="rank">
+                    <option value="lowest">4 - пара человек</option>
+                    <option value="low">3 - должна быть команда</option>
+                    <option value="medium">2 - должен быть отдел</option>
+                    <option value="high">1 - должны быть все</option>
+                </select>
+            </div>
             
             <div class="form-group">
               <label>Дата</label>
@@ -52,8 +62,13 @@
             </div>
             
             <div class="form-group">
-              <label>Время</label>
-              <input v-model="newEvent.time" type="time">
+              <label>Время начала мероприятия</label>
+              <input v-model="newEvent.start_time" type="time" id="start_time">
+            </div>
+
+            <div class="form-group">
+              <label>Время окончания мероприятия</label>
+              <input v-model="newEvent.end_time" type="time" id="end_time">
             </div>
             
             <div class="form-group">
@@ -80,6 +95,7 @@
 
 <script>
 import { useAuthStore } from '@/stores/authStore';
+import { ref } from 'vue';
 export default {
   props: {
     week: {
@@ -111,10 +127,21 @@ export default {
     },
   },
   setup() {
-    const authStore = useAuthStore()
+    const authStore = useAuthStore();
+    const isOpen = ref(false);
+    const newEvent = ref({
+      title: '',
+      date: '',
+      start_time: '',
+      end_time: '',
+      description: '',
+      rank: 'lowest' // Устанавливаем значение по умолчанию для ранга
+    });
     return {
       authStore,
       isAdmin: authStore.isAdmin,
+      isOpen,
+      newEvent,
     }
   },
   methods: {
@@ -137,10 +164,38 @@ export default {
         day: "numeric", 
         month: "long" 
       });
+    },
+    saveEvent() {
+      // Проверка на ввод данных
+      if (!this.newEvent.value.title || this.newEvent.value.date || this.newEvent.value.start_time || this.newEvent.value.end_time) {
+        alert("Пожалуйста, заполните все обязательные поля.");
+        return;
+      }
+
+      // Добавление нового события в массив events
+      this.events.push({
+        title: this.newEvent.value.title,
+        date: new Date(this.newEvent.value.date), // Преобразуем строку даты в объект Date
+        start_time: this.newEvent.value.start_time,
+        end_time: this.newEvent.value.end_time,
+        description: this.newEvent.value.description,
+        rank: this.newEvent.value.rank,
+      });
+      
+      this.isOpen.value = false; // Закрытие формы после сохранения
+
+      this.newEvent.value = {
+        title: '',
+        date: '',
+        time: '',
+        description: '',
+      }; // Сброс формы
     }
   },
 };
 </script>
+
+
 
 <style scoped>
 .week-view {
@@ -279,6 +334,13 @@ export default {
           label {
             display: block;
             margin-bottom: 5px;
+          }
+
+          select {
+            width: 100%;
+            padding: 8px;
+            display: block;
+            border-radius: 4px;
           }
   
           input,
