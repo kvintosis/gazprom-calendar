@@ -88,7 +88,6 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     
     &__container {
-      font-family: "helioscond";
       display: flex;
       align-items: center;
       max-width: 1200px;
@@ -143,7 +142,7 @@
       &::before {
         left: -10px;
         width: 100%;
-        background: linear-gradient(135deg, #d9d9d9 0%, #e8e8e8 50%, #d9d9d9 100%);
+        background: white;
         transition: none;
       }
       
