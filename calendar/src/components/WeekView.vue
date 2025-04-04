@@ -97,6 +97,15 @@
     <div class="calendar-note">
       Если вы планируете посетить мероприятие, отметьте его галочкой
     </div>
+
+    <div class="rec-header-container">
+        <img src="../../src/assets/exmark.png" class="rec-image">
+        <p class="rec-header">Рекомендация:</p>
+    </div>
+    <div class="recs">
+      
+      <p class="rec-text">Посетите 1 мероприятие 7 апреля в 12:00.</p>
+    </div>
   </div>
 </template>
 
@@ -374,6 +383,42 @@ export default {
   font-style: italic;
   color: #666;
   font-size: 0.9em;
+}
+
+.recs {
+  margin-left: 15%;
+  margin-right: 15%;
+  border: 1px solid black;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color:(66, 133, 244, 0.2);
+  border-radius: 4px;
+}
+
+.rec-header-container {
+  display: flex;
+  align-items: center;
+  margin-left: 15%;
+  margin-top: 2%;
+}
+
+.rec-header {
+  font-size: 24px;
+  color: black;
+}
+
+.rec-image {
+  width: 30px; 
+  height: 30px;
+  margin-right: 10px; 
+}
+
+.rec-text {
+  font-size: 18px;
+  color: black;
+  margin: 5px 0 0 0; 
 }
 
 </style>
