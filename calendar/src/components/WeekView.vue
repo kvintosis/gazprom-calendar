@@ -118,18 +118,16 @@ export default {
   },
   data() {
     return {
-      events: [], // Инициализируем массив событий
-      users: [], // Список пользователей
+      events: [], 
+      users: [],
     };
   },
   computed: {
-    // Получаем дни недели (пн-пт)
     daysOfWeek() {
       const start = this.week.startDate;
       const days = [];
       let currentDate = new Date(start);
 
-      // Только рабочие дни (понедельник-пятница)
       for (let i = 0; i < 5; i++) {
         days.push({
           date: new Date(currentDate),
@@ -156,7 +154,7 @@ export default {
       start_time: '',
       end_time: '',
       description: '',
-      rank: 'lowest', // Устанавливаем значение по умолчанию для ранга
+      rank: 'lowest',
     });
 
     return {
@@ -167,10 +165,9 @@ export default {
     };
   },
   mounted() {
-    this.fetchEvents(); // Загружаем список пользователей при монтировании
+    this.fetchEvents();
   },
   methods: {
-    // События для конкретного дня
     getEventsForDay(date) {
       return this.events
         .filter(event => event.date.toDateString() === date.toDateString())
@@ -181,14 +178,11 @@ export default {
           return 0; // Если свойства отсутствуют, не изменяем порядок
         });
     },
-    
-    // Название дня недели на русском
     getRussianDayName(date) {
       const days = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
       return days[date.getDay()];
     },
     
-    // Форматирование даты на русском
     formatRussianDate(date) {
       return date.toLocaleDateString("ru-RU", { 
         day: "numeric", 
@@ -197,21 +191,18 @@ export default {
     },
     async fetchEvents() {
       try {
-        const response = await api.get("/events"); // Используем axios
+        const response = await api.get("/events");
         if (response.status !== 200) {
           throw new Error("Ошибка при загрузке событий");
         }
-
-        // Преобразуем данные событий
         this.events = response.data.map(event => ({
           ...event,
-          date: new Date(event.start_time), // Преобразуем дату начала в объект Date
+          date: new Date(event.start_time),
           start_time: event.start_time.split("T")[1].slice(0, 5), // Часы:минуты
           end_time: event.end_time.split("T")[1].slice(0, 5), // Часы:минуты
         }));
       } catch (error) {
         console.error("Ошибка при загрузке событий:", error.message || error.response?.data);
-        alert("Не удалось загрузить события. Проверьте соединение с сервером.");
       }
     },
     async fetchUsers() {
@@ -229,7 +220,6 @@ export default {
     },
     async saveEvent() {
       try {
-        // Проверка обязательных полей
         if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time) {
           alert("Пожалуйста, заполните обязательные поля: Название, Дата, Время начала и Время окончания.");
           return;
@@ -243,9 +233,6 @@ export default {
           end_time: `${this.newEvent.date}T${this.newEvent.end_time}`,
           type: "meeting",
         };
-
-        console.log("Отправка данных:", requestBody); // Логирование данных для проверки
-
         // Отправка POST-запроса
         const response = await api.post("/adminboard/createevent", requestBody);
 
@@ -267,14 +254,14 @@ export default {
         };
       } catch (error) {
         console.error("Ошибка при создании события:", error.response?.data || error.message);
-        alert("Ошибка при создании события. Проверьте данные и попробуйте снова.");
       }
     },
     async deleteEvent(event) {
       try {
-          const response = await fetch(`http://127.0.0.1:8000/adminboard/deleteevent/${event.id}`, {
-              method: "DELETE",
-              credentials: "include", // Для отправки куки
+          const response = api.delete(`/adminboard/deleteevent/${event.id}`, {
+              headers: {
+                  'Content-Type': 'application/json',
+              },
           });
 
           if (!response.ok) {
