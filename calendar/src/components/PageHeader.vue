@@ -49,6 +49,7 @@
       const resetAuth = () => {
           authStore.setAuth(false, false);
           console.log("Авторизация сброшена: isAuth = false, isAdmin = false");
+          window.location.reload();
       };
 
       const tabs = [

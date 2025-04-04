@@ -21,6 +21,7 @@ api.interceptors.response.use(
       if (status === 307) {
         const redirectUrl = error.response.headers?.location;
         if (redirectUrl && redirectUrl === "/need-auth") {
+            window.location.href = "/";
             authStore.showLoginPopUp();
             window.location.reload();
         }
