@@ -373,8 +373,8 @@ export default {
 }
 
 .recs {
-  margin-left: 15%;
-  margin-right: 15%;
+  margin-left: 12%;
+  margin-right: 12%;
   border: 1px solid black;
   padding: 20px;
   display: flex;
@@ -388,7 +388,7 @@ export default {
   display: flex;
   align-items: center;
   margin-left: 15%;
-  margin-top: 2%;
+  margin-top: 6%;
 }
 
 .rec-header {
@@ -400,6 +400,7 @@ export default {
   width: 30px; 
   height: 30px;
   margin-right: 10px; 
+  margin-bottom: 10px;
 }
 
 .rec-text {
