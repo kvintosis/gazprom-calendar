@@ -5,6 +5,9 @@
       <div v-for="day in daysOfWeek" :key="day.date" class="day-header">
         <div class="day-name">{{ day.dayName }},</div>
         <div class="day-date">{{ formatRussianDate(day.date) }}</div>
+        <div class="birthday" v-if="isBirthday(day.date)">
+          <img src="@/assets/birthday.png" alt="День рождения!">
+        </div>
       </div>
     </div>
 
@@ -177,6 +180,13 @@ export default {
     this.fetchEvents();
   },
   methods: {
+    isBirthday(date) {
+      const birthday = new Date('2024-04-10T00:00:00');
+      return (
+        date.getDate() === birthday.getDate() &&
+        date.getMonth() === birthday.getMonth()
+      );
+   },
     getEventsForDay(date) {
       return this.events
         .filter(event => event.date.toDateString() === date.toDateString())
@@ -302,6 +312,28 @@ export default {
   text-align: center;
   padding: 8px;
   border-bottom: 2px solid #eee;
+  position: relative;
+}
+
+.day-header:has(.birthday) {
+   display: flex;
+   flex-direction: column;
+}
+
+.birthday {
+  position: absolute;
+  top: 15px;
+  right: 5px;
+  width: 25px;
+  height: 25px;
+  padding: 0px;
+}
+
+.birthday img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0;
 }
 
 .day-name {
