@@ -54,6 +54,13 @@
                 <option value="medium">2 - должен быть отдел</option>
                 <option value="high">1 - должны быть все</option>
               </select>
+              <label for="rank">Ранг/Приоритет:</label>
+              <select id="rank" v-model="newEvent.rank">
+                <option value="lowest">4 - пара человек</option>
+                <option value="low">3 - должна быть команда</option>
+                <option value="medium">2 - должен быть отдел</option>
+                <option value="high">1 - должны быть все</option>
+              </select>
             </div>
             
             <div class="form-group">
@@ -69,6 +76,15 @@
             <div class="form-group">
               <label>Время окончания мероприятия</label>
               <input v-model="newEvent.end_time" type="time" id="end_time">
+            </div>
+            
+            <div class="form-group">
+              <label>Организатор</label>
+              <select v-model="newEvent.organizer_id">
+                <option v-for="user in users" :key="user.id" :value="user.id">
+                  {{ user.name }}
+                </option>
+              </select>
             </div>
             
             <div class="form-group">
@@ -102,7 +118,9 @@
 
 <script>
 import { watch, ref } from 'vue';
+import { watch, ref } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
+import api from '@/services/api';
 
 export default {
   props: {
@@ -117,6 +135,7 @@ export default {
   },
   data() {
     return {
+      events: [], // Инициализируем массив событий
       users: [], // Список пользователей
     };
   },
@@ -155,7 +174,9 @@ export default {
       end_time: '',
       description: '',
       rank: 'lowest', // Устанавливаем значение по умолчанию для ранга
+      rank: 'lowest', // Устанавливаем значение по умолчанию для ранга
     });
+
 
     return {
       authStore,
@@ -165,11 +186,19 @@ export default {
     };
   },
   mounted() {
-    this.fetchUsers(); // Загружаем список пользователей при монтировании
+    this.fetchEvents(); // Загружаем список пользователей при монтировании
   },
   methods: {
     // События для конкретного дня
     getEventsForDay(date) {
+      return this.events
+        .filter(event => event.date.toDateString() === date.toDateString())
+        .sort((a, b) => {
+          if (a.start_time && b.start_time) {
+            return a.start_time.localeCompare(b.start_time);
+          }
+          return 0; // Если свойства отсутствуют, не изменяем порядок
+        });
       return this.events
         .filter(event => event.date.toDateString() === date.toDateString())
         .sort((a, b) => {
@@ -194,23 +223,23 @@ export default {
       });
     },
     async fetchEvents() {
-        try {
-            const response = await fetch("http://127.0.0.1:8000/events", {
-                credentials: "include", // Для отправки куки
-            });
-            if (!response.ok) {
-                throw new Error("Ошибка при загрузке событий");
-            }
-            const data = await response.json();
-            this.events = data.map(event => ({
-                ...event,
-                date: new Date(event.start_time), // Преобразуем дату начала в объект Date
-                start_time: event.start_time.split("T")[1].slice(0, 5), // Часы:минуты
-                end_time: event.end_time.split("T")[1].slice(0, 5), // Часы:минуты
-            }));
-        } catch (error) {
-            console.error(error);
+      try {
+        const response = await api.get("/events"); // Используем axios
+        if (response.status !== 200) {
+          throw new Error("Ошибка при загрузке событий");
         }
+
+        // Преобразуем данные событий
+        this.events = response.data.map(event => ({
+          ...event,
+          date: new Date(event.start_time), // Преобразуем дату начала в объект Date
+          start_time: event.start_time.split("T")[1].slice(0, 5), // Часы:минуты
+          end_time: event.end_time.split("T")[1].slice(0, 5), // Часы:минуты
+        }));
+      } catch (error) {
+        console.error("Ошибка при загрузке событий:", error.message || error.response?.data);
+        alert("Не удалось загрузить события. Проверьте соединение с сервером.");
+      }
     },
     async fetchUsers() {
       try {
@@ -227,28 +256,27 @@ export default {
     },
     async saveEvent() {
       try {
-        if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time || !this.newEvent.organizer_id) {
-          alert("Пожалуйста, заполните все обязательные поля.");
+        // Проверка обязательных полей
+        if (!this.newEvent.title || !this.newEvent.date || !this.newEvent.start_time || !this.newEvent.end_time) {
+          alert("Пожалуйста, заполните обязательные поля: Название, Дата, Время начала и Время окончания.");
           return;
         }
 
-        const response = await fetch("http://127.0.0.1:8000/adminboard/createevent", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Для отправки куки
-          body: JSON.stringify({
-            title: this.newEvent.title,
-            description: this.newEvent.description,
-            start_time: `${this.newEvent.date}T${this.newEvent.start_time}`,
-            end_time: `${this.newEvent.date}T${this.newEvent.end_time}`,
-            type: "meeting", // Пример типа
-            organizer_id: this.newEvent.organizer_id, // Передаем organizer_id
-          }),
-        });
+        // Формируем тело запроса
+        const requestBody = {
+          title: this.newEvent.title,
+          description: this.newEvent.description || null,
+          start_time: `${this.newEvent.date}T${this.newEvent.start_time}`,
+          end_time: `${this.newEvent.date}T${this.newEvent.end_time}`,
+          type: "meeting",
+        };
 
-        if (!response.ok) {
+        console.log("Отправка данных:", requestBody); // Логирование данных для проверки
+
+        // Отправка POST-запроса
+        const response = await api.post("/adminboard/createevent", requestBody);
+
+        if (response.status !== 200) {
           throw new Error("Ошибка при создании события");
         }
 
@@ -263,10 +291,10 @@ export default {
           end_time: '',
           description: '',
           rank: 'lowest',
-          organizer_id: null,
         };
       } catch (error) {
-        console.error("Ошибка при создании события:", error);
+        console.error("Ошибка при создании события:", error.response?.data || error.message);
+        alert("Ошибка при создании события. Проверьте данные и попробуйте снова.");
       }
     },
     async deleteEvent(event) {
