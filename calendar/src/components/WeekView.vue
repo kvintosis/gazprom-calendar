@@ -455,7 +455,7 @@ export default {
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background: @primary-color;
+      background: #0079C2;
       color: white;
       border: none;
       font-size: 24px;
@@ -523,7 +523,7 @@ export default {
             cursor: pointer;
   
             &:first-child {
-              background: @primary-color;
+              background: #0079C2;
               color: white;
             }
           }
